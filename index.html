@@ -2,137 +2,133 @@
 <html lang="az">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love Me Valentine</title>
+    <title>Heart Particles Animation</title>
     <style>
-        * {
+        body, html {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #ffe6e6;
-            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
             overflow: hidden;
-        }
-
-        .question-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-        }
-
-        .local-gif {
-            width: 100%;
-            max-width: 200px;
-            margin: 0 auto 30px;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 180px;
         }
-
-        .local-gif img {
-            max-width: 100%;
-            max-height: 100%;
-            border-radius: 10px;
-            pointer-events: none;
-        }
-
-        .question {
-            font-size: 2.8rem;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 30px;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            position: relative;
-            height: 60px;
-            width: 100%;
-        }
-
-        .btn {
-            padding: 12px 35px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            color: white;
-            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
-            transition: transform 0.1s ease;
-        }
-
-        #yes-btn {
-            background-color: #ff547d;
-        }
-
-        #no-btn {
-            background-color: #7b2cbf;
+        canvas {
             position: absolute;
-            /* İlkin olaraq Yes-in sağında dursun */
-            left: calc(50% + 10px); 
-            box-shadow: 0 5px 15px rgba(123, 44, 191, 0.4);
-            transition: left 0.15s ease, top 0.15s ease;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #00000033;
+            z-index: 1;
+        }
+        /* "I Love You" yazısı üçün xüsusi və yavaşca çıxan animasiya */
+        .love-text {
+            position: absolute;
+            font-family: 'Poppins', 'Georgia', sans-serif;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff003c;
+            z-index: 2;
+            pointer-events: none;
+            /* Ekranın tam ortasından bir az aşağıda dayanması üçün */
+            margin-top: 320px; 
+            text-shadow: 0 0 10px #ff003c, 0 0 20px #ff003c, 0 0 30px #ff003c;
+            opacity: 0;
+            animation: fadeInAndGlow 4s ease-in-out forwards;
+        }
+
+        @keyframes fadeInAndGlow {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
     </style>
 </head>
 <body>
-
-    <div class="question-container">
-        <div class="local-gif">
-            <img id="gif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3B0NjZnd3h6ZDRnMm1vZXg0Y3g0eW9tNmN5bW90bXNtcDRscW9wdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cM9Yv0VwX9wtsBAtK5/giphy.gif" alt="Cute Bear">
-        </div>
-        <h1 class="question" id="question-text">Do you love me?</h1>
-        <div class="button-container">
-            <button class="btn" id="yes-btn" onclick="selectYes()">Yes</button>
-            <button class="btn" id="no-btn" onmouseover="moveNoButton()" onclick="moveNoButton()">No</button>
-        </div>
-    </div>
+    <canvas id="heartCanvas"></canvas>
+    <div class="love-text">I Love You</div>
 
     <script>
-        const noBtn = document.getElementById('no-btn');
-        const yesBtn = document.getElementById('yes-btn');
-        const gif = document.getElementById('gif');
-        const questionText = document.getElementById('question-text');
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
 
-        function moveNoButton() {
-            // "No" düyməsinin pəncərənin hər yerinə qaçması
-            const maxX = window.innerWidth - noBtn.offsetWidth - 20;
-            const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
 
-            const randomX = Math.floor(Math.random() * maxX);
-            const randomY = Math.floor(Math.random() * maxY);
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
 
-            noBtn.style.position = 'fixed';
-            noBtn.style.left = randomX + 'px';
-            noBtn.style.top = randomY + 'px';
+        // Ürəyin riyazi formulası
+        function heartPosition(t) {
+            return {
+                x: 16 * Math.pow(Math.sin(t), 3),
+                y: -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t))
+            };
         }
 
-        function selectYes() {
-            // Yes kliklənəndə videodakı kimi qucaqlaşan ayıların gəlməsi
-            questionText.textContent = "I knew it! 😍";
-            gif.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbW90bm9pZGRpOHh3Ym95b3g0d3V0eW9tbXNtcDRscW9wdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/v9xM6uNWGv0Uo/giphy.gif";
-            
-            // Düymələri ekrandan tamamilə yox edirik
-            noBtn.style.display = 'none';
-            yesBtn.style.display = 'none';
+        const particles = [];
+        const particleCount = 600;
+
+        for (let i = 0; i < particleCount; i++) {
+            const t = Math.random() * Math.PI * 2;
+            const pos = heartPosition(t);
+            const r = Math.random() * 2 + 1;
+            const speed = Math.random() * 0.5 + 0.2;
+            particles.push({
+                t: t,
+                baseX: pos.x,
+                baseY: pos.y,
+                x: pos.x,
+                y: pos.y,
+                r: r,
+                speed: speed,
+                scale: Math.random() * 10 + 10
+            });
         }
+
+        let loopCount = 0;
+
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, width, height);
+
+            loopCount += 0.05;
+            const pulse = 1 + Math.sin(loopCount) * 0.1;
+
+            ctx.fillStyle = '#ff003c';
+            ctx.translate(width / 2, height / 2);
+
+            particles.forEach(p => {
+                p.t += 0.005;
+                const pos = heartPosition(p.t);
+                
+                // Hissəciklərin hərəkəti və döyünmə effekti
+                p.x = pos.x * p.scale * pulse;
+                p.y = pos.y * p.scale * pulse;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            requestAnimationFrame(animate);
+        }
+
+        animate();
     </script>
 </body>
 </html>
