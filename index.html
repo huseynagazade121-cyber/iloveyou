@@ -2,6 +2,7 @@
 <html lang="az">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <title>Heart Particles Animation</title>
     <style>
         body, html {
@@ -14,6 +15,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            /* Telefonda səhifəni aşağı çəkəndə yenilənməsin dərək */
+            overscroll-behavior: none; 
         }
         canvas {
             position: absolute;
@@ -24,33 +27,39 @@
             background-color: #00000033;
             z-index: 1;
         }
-        /* "I Love You" yazısı üçün xüsusi və yavaşca çıxan animasiya */
+        /* Telefona uyğunlaşdırılmış "I Love You" yazısı */
         .love-text {
             position: absolute;
-            font-family: 'Poppins', 'Georgia', sans-serif;
-            font-size: 2.5rem;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            font-size: 2.2rem; /* Telefonda ideal görünən ölçü */
             font-weight: bold;
             color: #ff003c;
             z-index: 2;
             pointer-events: none;
-            /* Ekranın tam ortasından bir az aşağıda dayanması üçün */
-            margin-top: 320px; 
             text-shadow: 0 0 10px #ff003c, 0 0 20px #ff003c, 0 0 30px #ff003c;
             opacity: 0;
-            animation: fadeInAndGlow 4s ease-in-out forwards;
+            animation: fadeInAndGlow 3.5s ease-in-out forwards;
+            white-space: nowrap;
+        }
+
+        /* Kiçik ekranlı telefonlar üçün yazı ölçüsünü bir az da optimallaşdırırıq */
+        @media (max-width: 480px) {
+            .love-text {
+                font-size: 1.8rem;
+            }
         }
 
         @keyframes fadeInAndGlow {
             0% {
                 opacity: 0;
-                transform: scale(0.8);
-            }
-            50% {
-                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(0.8);
             }
             100% {
                 opacity: 1;
-                transform: scale(1);
+                transform: translate(-50%, -50%) scale(1);
             }
         }
     </style>
@@ -66,12 +75,12 @@
         let width = canvas.width = window.innerWidth;
         let height = canvas.height = window.innerHeight;
 
+        // Telefon çevriləndə və ya ölçü dəyişəndə avtomatik uyğunlaşma
         window.addEventListener('resize', () => {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
         });
 
-        // Ürəyin riyazi formulası
         function heartPosition(t) {
             return {
                 x: 16 * Math.pow(Math.sin(t), 3),
@@ -80,13 +89,17 @@
         }
 
         const particles = [];
-        const particleCount = 600;
+        const particleCount = 500; // Telefonlarda donma olmasın deyə optimal say
 
         for (let i = 0; i < particleCount; i++) {
             const t = Math.random() * Math.PI * 2;
             const pos = heartPosition(t);
             const r = Math.random() * 2 + 1;
             const speed = Math.random() * 0.5 + 0.2;
+            
+            // Telefon ekranına görə ürəyin ölçüsünü (scale) tənzimləyirik
+            const baseScale = Math.min(width, height) / 30; 
+
             particles.push({
                 t: t,
                 baseX: pos.x,
@@ -95,7 +108,7 @@
                 y: pos.y,
                 r: r,
                 speed: speed,
-                scale: Math.random() * 10 + 10
+                scale: baseScale + (Math.random() * 2 - 1)
             });
         }
 
@@ -106,18 +119,20 @@
             ctx.fillRect(0, 0, width, height);
 
             loopCount += 0.05;
-            const pulse = 1 + Math.sin(loopCount) * 0.1;
+            const pulse = 1 + Math.sin(loopCount) * 0.08;
 
             ctx.fillStyle = '#ff003c';
             ctx.translate(width / 2, height / 2);
+
+            // Ekran dəyişdikdə ürəyin ölçüsünü yenidən hesablayırıf
+            const currentScale = Math.min(width, height) / 28;
 
             particles.forEach(p => {
                 p.t += 0.005;
                 const pos = heartPosition(p.t);
                 
-                // Hissəciklərin hərəkəti və döyünmə effekti
-                p.x = pos.x * p.scale * pulse;
-                p.y = pos.y * p.scale * pulse;
+                p.x = pos.x * currentScale * pulse;
+                p.y = pos.y * currentScale * pulse;
 
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
