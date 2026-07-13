@@ -15,7 +15,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Telefonda səhifəni aşağı çəkəndə yenilənməsin dərək */
             overscroll-behavior: none; 
         }
         canvas {
@@ -27,28 +26,28 @@
             background-color: #00000033;
             z-index: 1;
         }
-        /* Telefona uyğunlaşdırılmış "I Love You" yazısı */
+        /* Balacalaşmış ürəyə uyğun tənzimlənmiş yazı ölçüsü */
         .love-text {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Poppins', 'Segoe UI', sans-serif;
-            font-size: 2.2rem; /* Telefonda ideal görünən ölçü */
+            font-size: 1.6rem; /* Yazı ölçüsü kiçildildi ki, ürəyin içinə tam otursun */
             font-weight: bold;
             color: #ff003c;
             z-index: 2;
             pointer-events: none;
-            text-shadow: 0 0 10px #ff003c, 0 0 20px #ff003c, 0 0 30px #ff003c;
+            text-shadow: 0 0 8px #ff003c, 0 0 15px #ff003c;
             opacity: 0;
             animation: fadeInAndGlow 3.5s ease-in-out forwards;
             white-space: nowrap;
         }
 
-        /* Kiçik ekranlı telefonlar üçün yazı ölçüsünü bir az da optimallaşdırırıq */
+        /* Kiçik ekranlı telefonlar üçün yazı ölçüsü */
         @media (max-width: 480px) {
             .love-text {
-                font-size: 1.8rem;
+                font-size: 1.3rem;
             }
         }
 
@@ -75,7 +74,6 @@
         let width = canvas.width = window.innerWidth;
         let height = canvas.height = window.innerHeight;
 
-        // Telefon çevriləndə və ya ölçü dəyişəndə avtomatik uyğunlaşma
         window.addEventListener('resize', () => {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
@@ -89,7 +87,7 @@
         }
 
         const particles = [];
-        const particleCount = 500; // Telefonlarda donma olmasın deyə optimal say
+        const particleCount = 500; 
 
         for (let i = 0; i < particleCount; i++) {
             const t = Math.random() * Math.PI * 2;
@@ -97,8 +95,8 @@
             const r = Math.random() * 2 + 1;
             const speed = Math.random() * 0.5 + 0.2;
             
-            // Telefon ekranına görə ürəyin ölçüsünü (scale) tənzimləyirik
-            const baseScale = Math.min(width, height) / 30; 
+            // Ürəyi daha balaca etmək üçün bölmə rəqəmini artırdıq (30-dan 45-ə)
+            const baseScale = Math.min(width, height) / 45; 
 
             particles.push({
                 t: t,
@@ -124,8 +122,8 @@
             ctx.fillStyle = '#ff003c';
             ctx.translate(width / 2, height / 2);
 
-            // Ekran dəyişdikdə ürəyin ölçüsünü yenidən hesablayırıf
-            const currentScale = Math.min(width, height) / 28;
+            // Ürəyin ümumi ölçüsünü kiçiltmək üçün bura da düzəliş edildi (28-dən 42-yə)
+            const currentScale = Math.min(width, height) / 42;
 
             particles.forEach(p => {
                 p.t += 0.005;
