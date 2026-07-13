@@ -2,102 +2,137 @@
 <html lang="az">
 <head>
     <meta charset="UTF-8">
-    <title>Heart Animation Switch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Me Valentine</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #111;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-            flex-direction: column;
-            gap: 50px;
+            background-color: #ffe6e6;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
         }
 
-        /* Toggle Button Styles */
-        .toggle-switch {
+        .question-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .local-gif {
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 180px;
+        }
+
+        .local-gif img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        .question {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
             position: relative;
-            display: inline-block;
-            width: 46px;
-            height: 24px;
+            height: 60px;
+            width: 100%;
         }
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .toggle-slider {
-            position: absolute;
+
+        .btn {
+            padding: 12px 35px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
             cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #ccc;
-            transition: 0.3s;
-            border-radius: 24px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+            transition: transform 0.1s ease;
         }
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: 0.3s;
-            border-radius: 50%;
-        }
-        input:checked + .toggle-slider {
+
+        #yes-btn {
             background-color: #ff547d;
         }
-        input:checked + .toggle-slider:before {
-            transform: translateX(22px);
-        }
 
-        /* Neon Ürək Animasiya Sahəsi */
-        .heart-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            display: none;
-        }
-        input:checked ~ .heart-container {
-            display: block;
-        }
-        
-        svg {
-            width: 100%;
-            height: 100%;
-        }
-        path {
-            stroke: #ff547d;
-            stroke-width: 4;
-            fill: none;
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            animation: drawHeart 3s linear forwards;
-            filter: drop-shadow(0 0 8px #ff547d);
-        }
-
-        @keyframes drawHeart {
-            to {
-                stroke-dashoffset: 0;
-            }
+        #no-btn {
+            background-color: #7b2cbf;
+            position: absolute;
+            /* İlkin olaraq Yes-in sağında dursun */
+            left: calc(50% + 10px); 
+            box-shadow: 0 5px 15px rgba(123, 44, 191, 0.4);
+            transition: left 0.15s ease, top 0.15s ease;
         }
     </style>
 </head>
 <body>
 
-    <label class="toggle-switch">
-        <input type="checkbox" id="trigger">
-        <span class="toggle-slider"></span>
-    </label>
-
-    <div class="heart-container">
-        <svg viewBox="0 0 32 29.6">
-            <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
-            c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/>
-        </svg>
+    <div class="question-container">
+        <div class="local-gif">
+            <img id="gif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3B0NjZnd3h6ZDRnMm1vZXg0Y3g0eW9tNmN5bW90bXNtcDRscW9wdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cM9Yv0VwX9wtsBAtK5/giphy.gif" alt="Cute Bear">
+        </div>
+        <h1 class="question" id="question-text">Do you love me?</h1>
+        <div class="button-container">
+            <button class="btn" id="yes-btn" onclick="selectYes()">Yes</button>
+            <button class="btn" id="no-btn" onmouseover="moveNoButton()" onclick="moveNoButton()">No</button>
+        </div>
     </div>
 
+    <script>
+        const noBtn = document.getElementById('no-btn');
+        const yesBtn = document.getElementById('yes-btn');
+        const gif = document.getElementById('gif');
+        const questionText = document.getElementById('question-text');
+
+        function moveNoButton() {
+            // "No" düyməsinin pəncərənin hər yerinə qaçması
+            const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+        }
+
+        function selectYes() {
+            // Yes kliklənəndə videodakı kimi qucaqlaşan ayıların gəlməsi
+            questionText.textContent = "I knew it! 😍";
+            gif.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbW90bm9pZGRpOHh3Ym95b3g0d3V0eW9tbXNtcDRscW9wdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/v9xM6uNWGv0Uo/giphy.gif";
+            
+            // Düymələri ekrandan tamamilə yox edirik
+            noBtn.style.display = 'none';
+            yesBtn.style.display = 'none';
+        }
+    </script>
 </body>
 </html>
